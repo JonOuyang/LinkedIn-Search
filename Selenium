@@ -1,1 +1,41 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
+import time
+#IMPORTANT: Webdriver requires chrome driver, which is put into the system PATH
 
+# Creating a webdriver instance
+#driver = webdriver.Chrome(executable_path=r'C:\Chrome Driver\chromedriver.exe')
+driver = webdriver.Chrome()
+
+# This instance will be used to log into LinkedIn
+ 
+# Opening linkedIn's login page
+driver.get("https://www.linkedin.com/login")
+ 
+# waiting for the page to load
+time.sleep(3)
+ 
+# entering username
+username = driver.find_element(By.ID, "username")
+ 
+# In case of an error, try changing the element
+# tag used here.
+ 
+# Enter Your Email Address
+username.send_keys("jonsouyang@gmail.com")  
+ 
+# entering password
+pword = driver.find_element(By.ID, "password")
+# In case of an error, try changing the element 
+# tag used here.
+ 
+# Enter Your Password
+pword.send_keys("R0ck3tblur@!")        
+ 
+# Clicking on the log in button
+# Format (syntax) of writing XPath --> 
+# //tagname[@attribute='value']
+driver.find_element(By.XPATH, "//button[@type='submit']").click()
+# In case of an error, try changing the
+# XPath used here.
