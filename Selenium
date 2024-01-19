@@ -5,10 +5,7 @@ import time
 #IMPORTANT: Webdriver requires chrome driver, which is put into the system PATH
 
 # Creating a webdriver instance
-#driver = webdriver.Chrome(executable_path=r'C:\Chrome Driver\chromedriver.exe')
 driver = webdriver.Chrome()
-
-# This instance will be used to log into LinkedIn
  
 # Opening linkedIn's login page
 driver.get("https://www.linkedin.com/login")
@@ -23,7 +20,7 @@ username = driver.find_element(By.ID, "username")
 # tag used here.
  
 # Enter Your Email Address
-username.send_keys("jonsouyang@gmail.com")  
+username.send_keys("")  
  
 # entering password
 pword = driver.find_element(By.ID, "password")
@@ -31,7 +28,7 @@ pword = driver.find_element(By.ID, "password")
 # tag used here.
  
 # Enter Your Password
-pword.send_keys("R0ck3tblur@!")        
+pword.send_keys("")        
  
 # Clicking on the log in button
 # Format (syntax) of writing XPath --> 
