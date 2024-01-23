@@ -51,6 +51,35 @@ print(len(job_listings))
 for job in job_listings:
     element = driver.find_element(By.XPATH, f"//*[@id='{job.get('id')}']")
     element.click()
+
+#individual job function
+def load_job_data(keywords):
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+
+    #needs to be adjusted based on screen size; this is calibrated for vertical monitor fullscreen
+    scroll_origin = ScrollOrigin.from_viewport(500, 500)
+    ActionChains(driver)\
+        .scroll_from_origin(scroll_origin, 0, 5000)\
+        .perform()
+    
+    #description = soup.find('div', {'class': 'jobs-description__content jobs-description-content'})
+    description = driver.find_element(By.XPATH, '//*[@id="job-details"]')
+    #print(description.text)
+
+    
+    for word in keywords:
+        if word.lower() in description.text.lower():
+            job_name = soup.find('span', {'class': 'job-details-jobs-unified-top-card__job-title-link'})
+            #print(job_name.text.strip())
+            job_link = soup.find('a', {'class': 'app-aware-link'})
+            print(job_link)
+            break
+        else:
+            print("not found")
+
+#text.strip()
+    
+load_job_data(["NLP"])
     time.sleep(0.5)
 
 
