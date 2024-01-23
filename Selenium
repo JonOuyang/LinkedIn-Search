@@ -36,3 +36,19 @@ pword.send_keys("")
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
 # In case of an error, try changing the
 # XPath used here.
+
+#iterate through every job
+
+soup = BeautifulSoup(driver.page_source, "html.parser")
+
+job_listings = soup.find_all(
+        "div",
+        class_="flex-grow-1 artdeco-entity-lockup__content ember-view",
+    )
+print(len(job_listings))
+
+for job in job_listings:
+    
+    element = driver.find_element(By.XPATH, f"//*[@id='{job.get('id')}']")
+    element.click()
+    time.sleep(0.5)
