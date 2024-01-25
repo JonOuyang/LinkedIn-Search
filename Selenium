@@ -40,17 +40,45 @@ driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
 #iterate through every job
 
-soup = BeautifulSoup(driver.page_source, "html.parser")
+job_list = []
 
-job_listings = soup.find_all(
-        "div",
-        class_="flex-grow-1 artdeco-entity-lockup__content ember-view",
-    )
-print(len(job_listings))
+def search_job_page(keywords):
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    
+    scroll_origin = ScrollOrigin.from_viewport(200, 500)
+    
+    for _ in range(5):
+        ActionChains(driver)\
+            .scroll_from_origin(scroll_origin, 0, 1000)\
+            .perform()
+        
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        job_listings = soup.find_all(
+                    "div",
+                    class_="job-card-list__entity-lockup artdeco-entity-lockup artdeco-entity-lockup--size-4 ember-view",
+                )
+        element = driver.find_element(By.XPATH, f"//*[@id='{job_listings[-1].get('id')}']")
+        element.click()
+        time.sleep(0.4)
+        
+    #time.sleep(2)
 
-for job in job_listings:
-    element = driver.find_element(By.XPATH, f"//*[@id='{job.get('id')}']")
-    element.click()
+    job_listings = soup.find_all(
+            "div",
+            class_="job-card-list__entity-lockup artdeco-entity-lockup artdeco-entity-lockup--size-4 ember-view",
+        )
+    
+    #job-card-list__entity-lockup artdeco-entity-lockup artdeco-entity-lockup--size-4 ember-view
+    #flex-grow-1 artdeco-entity-lockup__content ember-view
+    
+    print(f'Numer of jobs detected on page: {len(job_listings)}')
+
+    for job in job_listings:
+
+        element = driver.find_element(By.XPATH, f"//*[@id='{job.get('id')}']")
+        element.click()
+        time.sleep(0.1)
+        load_job_data(keywords)
 
 #individual job function
 job_list = []
