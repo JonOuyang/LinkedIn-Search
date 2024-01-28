@@ -89,26 +89,40 @@ def load_job_data(keywords):
     #needs to be adjusted based on screen size; this is calibrated for vertical monitor fullscreen
     scroll_origin = ScrollOrigin.from_viewport(500, 500)
     
-    for _ in range(50):
+    ActionChains(driver)\
+        .scroll_from_origin(scroll_origin, 0, -200)\
+        .perform()
+    time.sleep(0.1)
+    for _ in range(5):
         ActionChains(driver)\
-            .scroll_from_origin(scroll_origin, 0, 100)\
+            .scroll_from_origin(scroll_origin, 0, 1000)\
             .perform()
-        time.sleep(0.01)
+        time.sleep(0.1)
+    
+    timeout = 5
+    try:
+        element_present = EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/div[2]/div[2]/div/div[2]/div/div[1]/div/section/section/div[1]/div[2]'))
+        WebDriverWait(driver, timeout).until(element_present)
+    except TimeoutException:
+        print("Timed out waiting for page to load")
     
     description = driver.find_element(By.XPATH, '//*[@id="job-details"]')
-    
+    time.sleep(0.5)
     for word in keywords:
         if word.lower() in description.text.lower():
-            job_company = soup.find('div', {'class': 'artdeco-entity-lockup__title ember-view t-20'}).text.strip()
+            try:
+                #job_company = soup.find('div', {'class': 'artdeco-entity-lockup__title ember-view t-20'}).text.strip()
+                job_company = soup.find('a', {'class': 'ember-view link-without-visited-state inline-block t-black'}).text.strip()
+            except:
+                job_company = 'N/A'
             job_name = soup.find('span', {'class': 'job-details-jobs-unified-top-card__job-title-link'}).text.strip()
-            job_time = soup.find('span', {'class': 'tvm__text tvm__text--neutral'}).text.strip()
+            #job_time = soup.find('span', {'class': 'tvm__text tvm__text--positive'}).text.strip()
             job_link = driver.current_url
 
-            job_list.append({"Company" : job_company, "Job Title" : job_name, "Date Posted" : job_time, "Link" : job_link})
-            
+            job_list.append({"Company" : job_company, "Job Title" : job_name, "Link" : job_link})
             break
         else:
-            print("not found")
+            pass
 
 #text.strip()
     
