@@ -1,42 +1,32 @@
-
+import random
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import time
-#IMPORTANT: Webdriver requires chrome driver, which is put into the system PATH
+from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
+from selenium.webdriver import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import TimeoutException
 
-# Creating a webdriver instance
 driver = webdriver.Chrome()
- 
+
+# This instance will be used to log into LinkedIn
 # Opening linkedIn's login page
 driver.get("https://www.linkedin.com/login")
  
 # waiting for the page to load
-time.sleep(3)
+time.sleep(1)
  
-# entering username
 username = driver.find_element(By.ID, "username")
- 
-# In case of an error, try changing the element
-# tag used here.
- 
-# Enter Your Email Address
-username.send_keys("")  
- 
-# entering password
+username.send_keys("username")  
+
 pword = driver.find_element(By.ID, "password")
-# In case of an error, try changing the element 
-# tag used here.
+pword.send_keys("password")        
  
-# Enter Your Password
-pword.send_keys("")        
- 
-# Clicking on the log in button
-# Format (syntax) of writing XPath --> 
-# //tagname[@attribute='value']
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
-# In case of an error, try changing the
-# XPath used here.
 
 #iterate through every job
 
@@ -47,9 +37,9 @@ def search_job_page(keywords):
     
     scroll_origin = ScrollOrigin.from_viewport(200, 500)
     
-    for _ in range(5):
+    for _ in range(3):
         ActionChains(driver)\
-            .scroll_from_origin(scroll_origin, 0, 1000)\
+            .scroll_from_origin(scroll_origin, 0, 2000)\
             .perform()
         
         soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -57,31 +47,20 @@ def search_job_page(keywords):
                     "div",
                     class_="job-card-list__entity-lockup artdeco-entity-lockup artdeco-entity-lockup--size-4 ember-view",
                 )
-        element = driver.find_element(By.XPATH, f"//*[@id='{job_listings[-1].get('id')}']")
-        element.click()
-        time.sleep(0.4)
+        driver.find_element(By.XPATH, f"//*[@id='{job_listings[-1].get('id')}']").click()
+        time.sleep(0.2)
         
-    #time.sleep(2)
-
     job_listings = soup.find_all(
             "div",
             class_="job-card-list__entity-lockup artdeco-entity-lockup artdeco-entity-lockup--size-4 ember-view",
         )
     
-    #job-card-list__entity-lockup artdeco-entity-lockup artdeco-entity-lockup--size-4 ember-view
-    #flex-grow-1 artdeco-entity-lockup__content ember-view
-    
     print(f'Numer of jobs detected on page: {len(job_listings)}')
 
     for job in job_listings:
-
-        element = driver.find_element(By.XPATH, f"//*[@id='{job.get('id')}']")
-        element.click()
+        driver.find_element(By.XPATH, f"//*[@id='{job.get('id')}']").click()
         time.sleep(0.1)
         load_job_data(keywords)
-
-#individual job function
-job_list = []
 
 def load_job_data(keywords):
     soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -99,7 +78,7 @@ def load_job_data(keywords):
             .perform()
         time.sleep(0.1)
     
-    timeout = 5
+    timeout = 2
     try:
         element_present = EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/div[2]/div[2]/div/div[2]/div/div[1]/div/section/section/div[1]/div[2]'))
         WebDriverWait(driver, timeout).until(element_present)
@@ -111,12 +90,10 @@ def load_job_data(keywords):
     for word in keywords:
         if word.lower() in description.text.lower():
             try:
-                #job_company = soup.find('div', {'class': 'artdeco-entity-lockup__title ember-view t-20'}).text.strip()
                 job_company = soup.find('a', {'class': 'ember-view link-without-visited-state inline-block t-black'}).text.strip()
             except:
                 job_company = 'N/A'
             job_name = soup.find('span', {'class': 'job-details-jobs-unified-top-card__job-title-link'}).text.strip()
-            #job_time = soup.find('span', {'class': 'tvm__text tvm__text--positive'}).text.strip()
             job_link = driver.current_url
 
             job_list.append({"Company" : job_company, "Job Title" : job_name, "Link" : job_link})
@@ -125,11 +102,18 @@ def load_job_data(keywords):
             pass
 
 def scrape_jobs(title, location, keywords):
-    driver.get(f"https://www.linkedin.com/jobs/search/?keywords={title}&location={location}")
-    time.sleep(1)
-    search_job_page(keywords)
+    page = 0
+    while True:
+        driver.get(f"https://www.linkedin.com/jobs/search/?keywords={title}&location={location}&start={page*25}")
+        try:
+            driver.find_element(By.XPATH, "/html/body/div[4]/div[3]/div[4]/div/div[1]/div/div[1]")
+            print("Search Complete.")
+            break
+        except:
+            time.sleep(1)
+            search_job_page(keywords)
+            page += 1
 
 scrape_jobs("engineer", "Remote", ["bachelor"])
 print(job_list)
-
-
+print(len(job_list))
