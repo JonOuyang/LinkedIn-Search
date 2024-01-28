@@ -124,9 +124,12 @@ def load_job_data(keywords):
         else:
             pass
 
-#text.strip()
-    
-load_job_data(["work"])
+def scrape_jobs(title, location, keywords):
+    driver.get(f"https://www.linkedin.com/jobs/search/?keywords={title}&location={location}")
+    time.sleep(1)
+    search_job_page(keywords)
+
+scrape_jobs("engineer", "Remote", ["bachelor"])
 print(job_list)
 
 
