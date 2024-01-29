@@ -28,9 +28,9 @@ pword.send_keys("password")
  
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
-#iterate through every job
-
 job_list = []
+
+#iterate through every job currently on page
 
 def search_job_page(keywords):
     soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -61,6 +61,8 @@ def search_job_page(keywords):
         driver.find_element(By.XPATH, f"//*[@id='{job.get('id')}']").click()
         time.sleep(0.1)
         load_job_data(keywords)
+
+#loads job description, company, date, etc on selected job
 
 def load_job_data(keywords):
     soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -101,6 +103,7 @@ def load_job_data(keywords):
         else:
             pass
 
+#scrapes all jobs, taking in parameter of job title, job location, and keywords to look for in description
 def scrape_jobs(title, location, keywords):
     page = 0
     while True:
