@@ -47,7 +47,11 @@ def search_job_page(keywords):
                     "div",
                     class_="job-card-list__entity-lockup artdeco-entity-lockup artdeco-entity-lockup--size-4 ember-view",
                 )
-        driver.find_element(By.XPATH, f"//*[@id='{job_listings[-1].get('id')}']").click()
+     #encountered errors in finding element on page 5, attempt to bypass using try pass   
+     try:
+          driver.find_element(By.XPATH, f"//*[@id='{job_listings[-1].get('id')}']").click()
+         except:
+          pass
         time.sleep(0.2)
         
     job_listings = soup.find_all(
