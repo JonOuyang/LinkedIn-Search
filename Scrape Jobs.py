@@ -16,16 +16,11 @@ driver = webdriver.Chrome()
 # This instance will be used to log into LinkedIn
 # Opening linkedIn's login page
 driver.get("https://www.linkedin.com/login")
- 
-# waiting for the page to load
 time.sleep(1)
- 
 username = driver.find_element(By.ID, "username")
 username.send_keys("username")  
-
 pword = driver.find_element(By.ID, "password")
 pword.send_keys("password")        
- 
 driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
 job_list = []
